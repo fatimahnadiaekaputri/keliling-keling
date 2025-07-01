@@ -39,4 +39,12 @@ const registerValidation = [
   }
 ];
 
-module.exports = { registerValidation };
+const loginValidator = [
+    body('username')
+    .notEmpty().withMessage('Nama wajib diisi'),
+
+    body('password')
+    .notEmpty().withMessage('Nama wajib diisi'),
+]
+
+module.exports = { registerValidation, loginValidator };
