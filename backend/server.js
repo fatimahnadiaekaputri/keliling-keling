@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
   res.send('Test Backend Website Keliling-Keling!');
 });
 
-app.use('/api', userRouter);
+app.use('/api/user', userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

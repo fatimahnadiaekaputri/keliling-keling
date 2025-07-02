@@ -12,4 +12,16 @@ const findUserbyEmail = async (email) => {
     return await db('user').where({email}).first();
 }
 
-module.exports = { createUser, findUserByUsername, findUserbyEmail };
+const updateUserById = (user_id, data) => {
+    return db('user').where({user_id}).update(data).returning('*');
+};
+
+const findUserById = (user_id) => {
+    return db('user').where({user_id: user_id}).first();
+}
+
+const deleteUserById = async (user_id) => {
+    return await db('user').where({user_id}).del();
+};
+
+module.exports = { findUserById, createUser, findUserByUsername, findUserbyEmail, updateUserById, deleteUserById };
