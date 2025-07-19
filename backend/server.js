@@ -8,6 +8,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 const db = require('./src/config/db');
 const userRouter = require('./src/routes/userRoutes');
+const articleRouter = require('./src/routes/articleRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user', userRouter);
+app.use('/api/article', articleRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
