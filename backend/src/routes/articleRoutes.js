@@ -15,5 +15,4 @@ router.get('/:article_id', authenticate, getArticleByIdForUser);
 router.put('/:article_id', authenticate, updateArticle);
 router.delete('/:article_id', authenticate, deleteArticle);
 
-
 module.exports = router;
