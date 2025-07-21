@@ -9,7 +9,7 @@ const {uploadImage, deleteImage} = require('../controllers/mediaController');
 router.post('/', authenticate, validateArticle, addArticle);
 router.post('/upload', authenticate, upload.single('image'), uploadImage);
 router.delete('/upload', authenticate, deleteImage);
-router.get('/', authenticate, getAllArticles);
+router.get('/', getAllArticles);
 router.get('/me', authenticate, getArticleByUser);
 router.get('/:article_id', authenticate, getArticleByIdForUser);
 router.put('/:article_id', authenticate, updateArticle);
