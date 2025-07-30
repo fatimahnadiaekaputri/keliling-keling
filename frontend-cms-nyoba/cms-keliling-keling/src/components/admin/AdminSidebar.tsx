@@ -49,9 +49,9 @@ export default function AdminSidebarLayout({
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/users">
+                  <Link href="/admin/article/new">
                     <Users />
-                    <span>Users</span>
+                    <span>Article</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

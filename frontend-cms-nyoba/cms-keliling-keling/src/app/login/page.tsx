@@ -3,12 +3,16 @@
 import * as React from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import Cookies from "js-cookie"
+
 
 export default function LoginPage() {
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [error, setError] = React.useState("")
   const [loading, setLoading] = React.useState(false)
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,12 +27,13 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const res = await fetch("https://keliling-keling-backend-8764.vercel.app/api/user/login", {
+      const res = await fetch("http://localhost:5000/api/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        credentials: "include",
       })
 
       const data = await res.json()
@@ -37,8 +42,24 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed")
       }
 
-      alert("Login successful!")
-      // Lakukan redirect atau simpan token jika perlu
+      // Simpan token dari response body
+      Cookies.set("token", data.token, { expires: 1, path: "/" })
+
+      const profileRes = await fetch("http://localhost:5000/api/user/me", {
+        credentials: "include",
+      })
+
+      if (!profileRes.ok) {
+        throw new Error(data.message || "Failed to fetch user profile")
+      }
+
+      const profile = await profileRes.json()
+
+      if (profile.role === "admin") {
+        router.push("/admin/article/new")
+      } else {
+        alert("Anda bukan admin")
+      }
     } catch (err: any) {
       setError(err.message)
     } finally {

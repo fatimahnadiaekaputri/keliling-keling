@@ -4,7 +4,12 @@ import { useEffect, useState } from "react"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 
-export default function ArticleEditor() {
+interface ArticleEditorProps {
+  value: string
+  onChange: (value: string) => void
+}
+
+export default function ArticleEditor({ value, onChange }: ArticleEditorProps) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -13,13 +18,20 @@ export default function ArticleEditor() {
 
   const editor = useEditor({
     extensions: [StarterKit],
-    content: "<p>Tulis artikel di sini...</p>",
+    content: value || "<p>Tulis artikel di sini...</p>",
     editorProps: {
       attributes: {
         class: "prose min-h-[300px] p-4 border rounded-md bg-white",
       },
     },
-    immediatelyRender: false, // ✅ prevent SSR hydration error
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML())
+    },
+    // ✅ mencegah SSR hydration error
+    autofocus: false,
+    editable: true,
+    injectCSS: true,
+    immediatelyRender: false,
   })
 
   if (!mounted || !editor) {
