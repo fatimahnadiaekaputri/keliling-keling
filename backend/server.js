@@ -5,12 +5,18 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const cors = require('cors');
+const cookieParser = require("cookie-parser")
+app.use(cookieParser())
+
 const PORT = process.env.PORT || 5000;
 const db = require('./src/config/db');
 const userRouter = require('./src/routes/userRoutes');
 const articleRouter = require('./src/routes/articleRoutes');
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", 
+  credentials: true               
+}))
 app.use(express.json());
 
 // connection test
