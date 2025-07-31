@@ -14,9 +14,12 @@ const userRouter = require('./src/routes/userRoutes');
 const articleRouter = require('./src/routes/articleRoutes');
 
 app.use(cors({
-  origin: "http://localhost:3000", 
-  credentials: true               
-}))
+  origin: (origin, callback) => {
+    callback(null, origin); // izinkan semua origin
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // connection test
