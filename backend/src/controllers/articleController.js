@@ -44,11 +44,11 @@ const getArticleByUser = async (req, res) => {
     }
 };
 
-const getArticleByIdForUser = async (req, res) => {
+const getArticleById = async (req, res) => {
     try {
-        const user_id = req.user.user_id;
+        // const user_id = req.user.user_id;
         const {article_id} = req.params;
-        const article = await articleModel.getArticleByUserIdAndArticleId(user_id, article_id);
+        const article = await articleModel.getArticleByUserIdAndArticleId(article_id);
         
         if (!article) {
             return res.status(404).json({message: 'Article not found'});
@@ -95,6 +95,6 @@ const deleteArticle = async (req, res) => {
 };
 
 
-module.exports = { addArticle, getAllArticles, getArticleByUser, getArticleByIdForUser, 
+module.exports = { addArticle, getAllArticles, getArticleByUser, getArticleById, 
     updateArticle, deleteArticle
  };
