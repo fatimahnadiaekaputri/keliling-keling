@@ -48,7 +48,7 @@ const getArticleById = async (req, res) => {
     try {
         // const user_id = req.user.user_id;
         const {article_id} = req.params;
-        const article = await articleModel.getArticleByUserIdAndArticleId(article_id);
+        const article = await articleModel.getArticleByArticleId(article_id);
         
         if (!article) {
             return res.status(404).json({message: 'Article not found'});

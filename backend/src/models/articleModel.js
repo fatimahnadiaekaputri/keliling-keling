@@ -16,8 +16,8 @@ const getArticleByUserId = async (user_id) => {
     return db('article').where({user_id});
 }
 
-const getArticleByUserIdAndArticleId = async (user_id, article_id) => {
-    return db('article').where({user_id, article_id}).first();
+const getArticleByArticleId = async (article_id) => {
+    return db('article').where({article_id}).first();
 };
 
 const updateArticleById = async (user_id, article_id, data) => {
@@ -30,5 +30,5 @@ const deleteArticleById = async (user_id, article_id) => {
 
 module.exports = {
     createArticle, findArticleById, getAllArticles, getArticleByUserId,
-    getArticleByUserIdAndArticleId, updateArticleById, deleteArticleById
+    getArticleByArticleId, updateArticleById, deleteArticleById
 }
