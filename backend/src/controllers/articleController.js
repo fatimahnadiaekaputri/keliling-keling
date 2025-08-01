@@ -5,7 +5,7 @@ const {generateUniqueArticleId} = require('../middlewares/articleValidator');
 
 const addArticle = async (req, res, next) => {
     try {
-        const {title, content, photo} = req.body;
+        const {title, content, photo, location} = req.body;
         const user_id = req.user.user_id;
         const article_id = await generateUniqueArticleId();
 
@@ -15,7 +15,8 @@ const addArticle = async (req, res, next) => {
             content,
             photo,
             user_id,
-            timestamp: moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss')
+            timestamp: moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss'),
+            location
         };
 
         await articleModel.createArticle(newArticle);

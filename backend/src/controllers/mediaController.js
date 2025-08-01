@@ -59,4 +59,87 @@ const deleteImage = async (req, res, next) => {
     }
 };
 
-module.exports = {uploadImage, deleteImage};
+const uploadImageUMKM = async (req, res, next) => {
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: 'Tidak ada file yang diupload' });
+      }
+  
+      const streamUpload = (fileBuffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'umkm_keliling_keling',
+            },
+            (error, result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(error);
+              }
+            }
+          );
+          streamifier.createReadStream(fileBuffer).pipe(stream);
+        });
+      };
+  
+      // Upload semua file
+      const results = await Promise.all(
+        req.files.map((file) => streamUpload(file.buffer))
+      );
+  
+      res.status(200).json({
+        message: 'Semua gambar berhasil diupload',
+        images: results.map((r) => ({
+          url: r.secure_url,
+          public_id: r.public_id,
+        })),
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+
+  const uploadImageTourism = async (req, res, next) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+          return res.status(400).json({ message: 'Tidak ada file yang diupload' });
+        }
+    
+        const streamUpload = (fileBuffer) => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: 'pariwisata_keliling_keling',
+              },
+              (error, result) => {
+                if (result) {
+                  resolve(result);
+                } else {
+                  reject(error);
+                }
+              }
+            );
+            streamifier.createReadStream(fileBuffer).pipe(stream);
+          });
+        };
+    
+        // Upload semua file
+        const results = await Promise.all(
+          req.files.map((file) => streamUpload(file.buffer))
+        );
+    
+        res.status(200).json({
+          message: 'Semua gambar berhasil diupload',
+          images: results.map((r) => ({
+            url: r.secure_url,
+            public_id: r.public_id,
+          })),
+        });
+      } catch (error) {
+        next(error);
+      }
+  };
+
+module.exports = {uploadImage, deleteImage, uploadImageUMKM, uploadImageTourism};
