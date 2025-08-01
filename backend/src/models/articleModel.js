@@ -9,16 +9,24 @@ const findArticleById = async (article_id) => {
 };
 
 const getAllArticles = async () => {
-    return db('article').select('*');
-};
+    return db('article')
+      .select('article.*', 'user.name as writer')  
+      .leftJoin('user', 'article.user_id', 'user.user_id');
+  };
+  
 
 const getArticleByUserId = async (user_id) => {
     return db('article').where({user_id});
 }
 
 const getArticleByArticleId = async (article_id) => {
-    return db('article').where({article_id}).first();
-};
+    return db('article')
+      .select('article.*', 'user.name as writer')
+      .leftJoin('user', 'article.user_id', 'user.user_id')
+      .where('article.article_id', article_id)
+      .first();
+  };
+  
 
 const updateArticleById = async (user_id, article_id, data) => {
     return db('article').where({article_id, user_id}).update(data).returning('*');
