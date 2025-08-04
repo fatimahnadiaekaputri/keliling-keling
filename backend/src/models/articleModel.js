@@ -8,9 +8,16 @@ const findArticleById = async (article_id) => {
     return db('article').where({article_id: article_id}).first(); //get article by id
 };
 
-const getAllArticles = async () => {
+const getAllArticles = async (status) => {
     return db('article')
-      .select('article.*', 'user.name as writer')  
+      .select('article.*', 'user.name as writer')
+      .where('article.status', status)  
+      .leftJoin('user', 'article.user_id', 'user.user_id');
+  };
+
+  const getAllArticlesForAdmin = async () => {
+    return db('article')
+      .select('article.*', 'user.name as writer')
       .leftJoin('user', 'article.user_id', 'user.user_id');
   };
   
@@ -37,6 +44,6 @@ const deleteArticleById = async (user_id, article_id) => {
 };
 
 module.exports = {
-    createArticle, findArticleById, getAllArticles, getArticleByUserId,
+    createArticle, findArticleById, getAllArticles, getArticleByUserId, getAllArticlesForAdmin,
     getArticleByArticleId, updateArticleById, deleteArticleById
 }
