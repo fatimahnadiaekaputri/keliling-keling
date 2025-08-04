@@ -18,7 +18,9 @@ const createUMKM = async (umkm) => {
       owner: umkm.owner,
       created_at: jakartaTime,
       created_by: umkm.created_by,
-      photos: umkm.photos
+      photos: umkm.photos,
+      link: umkm.link,
+      business_telephone: umkm.business_telephone
     };
   
     const [inserted] = await db('business').insert(businessPayload).returning('*');
@@ -75,16 +77,58 @@ const getAllUMKM = async () => {
       )
       .leftJoin('user', 'business.created_by', 'user.user_id');
   };
-  
 
-const updateUMKM = async (business_id, data) => {
-    return db('business').where({business_id}).update(data).returning('*');
+  const searchUMKMByVillage = async (term, limit = 100) => {
+    const q = String(term).trim().toLowerCase()
+
+    const query = db("business")
+      .select(
+        "business.*",
+        "village.village_name as village_name",
+        "location.location_name",
+        "location.latitude",
+        "location.longitude",
+        "location.address",
+        "business_category.category_name",
+        "business_category.description as category_description",
+        "u.user_id as created_by_id",
+        "u.name as created_by_name"
+      )
+      .leftJoin("village", "business.village_id", "village.village_id")
+      .leftJoin("location", "business.location_id", "location.location_id")
+      .leftJoin("business_category", "business.category_id", "business_category.category_id")
+      .leftJoin("user as u", "business.created_by", "u.user_id") // alias user jadi u
+  
+    if (q) {
+      query.where(function () {
+        this.whereRaw(
+          "LOWER(REPLACE(village.village_name, 'desa ', '')) LIKE ?",
+          [`%${q.replace(/^desa\s+/i, "")}%`]
+        ).orWhereRaw(
+          "LOWER(village.village_name) LIKE ?",
+          [`%${q}%`]
+        )
+      })
+    }
+  
+    query.orderBy("business.business_name").limit(limit)
+  
+    try {
+      const results = await query
+      return results
+    } catch (error) {
+      throw error
+    }
+  }
+
+const updateUMKM = async (created_by, business_id, data) => {
+    return db('business').where({created_by, business_id}).update(data).returning('*');
 }
 
-const deleteUMKM = async (business_id) => {
-    return db('business').where({business_id}).del();
+const deleteUMKM = async (created_by, business_id) => {
+    return db('business').where({created_by, business_id}).del();
 }
 
 module.exports = {
-    createUMKM, findUMKMById, getAllUMKM, updateUMKM, deleteUMKM
+    createUMKM, findUMKMById, getAllUMKM, updateUMKM, deleteUMKM, searchUMKMByVillage
 }
