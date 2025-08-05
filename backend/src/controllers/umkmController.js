@@ -139,22 +139,59 @@ const updateUMKM = async (req, res) => {
       });
     }
 
-    const updated = await umkmModel.updateUMKM(user_id, business_id, data);
-
-    if (!updated || updated.length === 0) {
+    // 1. Cek apakah bisnisnya ada dan dimiliki oleh user
+    const existingBusiness = await umkmModel.getBusinessByIdAndUser(business_id, user_id);
+    if (!existingBusiness) {
       return res.status(404).json({ 
         message: "Data UMKM tidak ditemukan atau tidak ditulis oleh user" 
       });
     }
 
-    res.json({ message: 'Data UMKM updated', business: updated[0] });
+    // 2. Update tabel business
+    const businessFields = [
+      'business_name', 'description', 'category_id', 'village_id', 'price',
+      'owner', 'photos', 'link', 'business_telephone'
+    ];
+
+    const businessData = {};
+    for (const key of businessFields) {
+      if (key in data) businessData[key] = data[key];
+    }
+
+    let updatedBusiness = [];
+    if (Object.keys(businessData).length > 0) {
+      updatedBusiness = await umkmModel.updateUMKM(user_id, business_id, businessData);
+    } else {
+      updatedBusiness = [existingBusiness]; // fallback ke data lama kalau bisnis gak diubah
+    }
+
+    // 3. Update tabel location (kalau ada field yang dikirim)
+    const locationFields = ['latitude', 'longitude', 'address', 'location_name'];
+    const locationData = {};
+    for (const key of locationFields) {
+      if (key in data) locationData[key] = data[key];
+    }
+
+    let updatedLocation = null;
+    if (Object.keys(locationData).length > 0) {
+      updatedLocation = await locationModel.updateLocation(existingBusiness.location_id, locationData);
+    }
+
+    res.json({ 
+      message: 'Data UMKM berhasil di-update',
+      business: updatedBusiness[0],
+      ...(updatedLocation && { location: updatedLocation[0] })
+    });
+
   } catch (error) {
+    console.error('updateUMKM error:', error);
     res.status(500).json({ 
-      error: 'Failed to update data UKKM', 
+      error: 'Gagal mengupdate data UMKM', 
       detail: error.message 
     });
   }
-}
+};
+
 
 const deleteUMKM = async (req, res) => {
   try {

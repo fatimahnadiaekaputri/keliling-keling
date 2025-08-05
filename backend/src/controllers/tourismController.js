@@ -125,13 +125,55 @@ const updateTourism = async (req, res) => {
     const {tourism_id} = req.params;
     const data = req.body;
 
-    const updated = await tourismModel.updateTourism(user_id, tourism_id, data);
-
-    if (updated.length === 0) {
-      return res.status(404).json({message: "Data Pariwisata tidak ditemukan atau tidak ditulis oleh user"});
+    if (!data || Object.keys(data).length === 0) {
+      return res.status(400).json({ 
+        error: "Tidak ada data yang dikirim untuk di-update." 
+      });
     }
 
-    res.json({message: 'Data Pariwisata berhasil diupdate', tourism: updated[0]});
+    // 1. Cek apakah bisnisnya ada dan dimiliki oleh user
+    const existingTourism = await tourismModel.getTourismByIdAndUser(tourism_id, user_id);
+    if (!existingTourism) {
+      return res.status(404).json({ 
+        message: "Data Pariwisata tidak ditemukan atau tidak ditulis oleh user" 
+      });
+    }
+
+    // 2. Update tabel business
+    const tourismFields = [
+      'tourism_name', 'description', 'facility', 'ticket_fee',
+      'photos', 'link', "village_id"
+    ];
+
+    const tourismData = {};
+    for (const key of tourismFields) {
+      if (key in data) tourismData[key] = data[key];
+    }
+
+    let updatedTourism = [];
+    if (Object.keys(tourismData).length > 0) {
+      updatedTourism = await tourismModel.updateTourism(user_id, tourism_id, tourismData);
+    } else {
+      updatedTourism = [existingTourism]; // fallback ke data lama kalau bisnis gak diubah
+    }
+
+    // 3. Update tabel location (kalau ada field yang dikirim)
+    const locationFields = ['latitude', 'longitude', 'address', 'location_name'];
+    const locationData = {};
+    for (const key of locationFields) {
+      if (key in data) locationData[key] = data[key];
+    }
+
+    let updatedLocation = null;
+    if (Object.keys(locationData).length > 0) {
+      updatedLocation = await locationModel.updateLocation(existingTourism.location_id, locationData);
+    }
+
+    res.json({ 
+      message: 'Data pariwisata berhasil di-update',
+      tourism: updatedTourism[0],
+      ...(updatedLocation && { location: updatedLocation[0] })
+    });
   } catch (error) {
     console.error('Update data pariwisata error:', error);
     res.status(500).json({error: 'Failed to update data pariwisata', detail: error.message});

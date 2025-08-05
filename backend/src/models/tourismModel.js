@@ -101,6 +101,12 @@ const searchTourismByVillage = async (term, limit = 100) => {
   }
 }
 
+const getTourismByIdAndUser = async (tourism_id, user_id) => {
+  return db('tourism')
+    .where({ tourism_id, created_by: user_id })
+    .first();
+};
+
 const updateTourism = async (created_by, tourism_id, data) => {
   return db('tourism').where({tourism_id, created_by}).update(data).returning('*');
 };
@@ -110,4 +116,4 @@ const deleteTourism = async (created_by, tourism_id) => {
 }
 
 
-module.exports = {createTourism, getAllTourism, findTourismById, updateTourism, deleteTourism, searchTourismByVillage};
+module.exports = {createTourism, getAllTourism, findTourismById, updateTourism, deleteTourism, searchTourismByVillage, getTourismByIdAndUser};
