@@ -52,6 +52,12 @@ const findVillageById = async (village_id) => {
   .first();
 }
 
+const getVillageById = async (village_id) => {
+  return db('village')
+    .where({ village_id })
+    .first();
+};
+
 const updateVillage = async (village_id, data) => {
   return db('village').where({village_id}).update(data).returning('*');
 }
@@ -61,5 +67,5 @@ const deleteVillage = async (created_by, village_id) => {
 }
 
 module.exports = {
-    createVillage, getAllVillage, findVillageById, updateVillage, deleteVillage
+    createVillage, getAllVillage, findVillageById, updateVillage, deleteVillage, getVillageById
 }

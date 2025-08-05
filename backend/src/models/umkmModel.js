@@ -120,6 +120,12 @@ const getAllUMKM = async () => {
       throw error
     }
   }
+  const getBusinessByIdAndUser = async (business_id, user_id) => {
+    return db('business')
+      .where({ business_id, created_by: user_id })
+      .first();
+  };
+  
 
 const updateUMKM = async (created_by, business_id, data) => {
     return db('business').where({created_by, business_id}).update(data).returning('*');
@@ -130,5 +136,5 @@ const deleteUMKM = async (created_by, business_id) => {
 }
 
 module.exports = {
-    createUMKM, findUMKMById, getAllUMKM, updateUMKM, deleteUMKM, searchUMKMByVillage
+    createUMKM, findUMKMById, getAllUMKM, updateUMKM, deleteUMKM, searchUMKMByVillage, getBusinessByIdAndUser
 }

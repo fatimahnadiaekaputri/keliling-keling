@@ -15,8 +15,12 @@ const createLocation = async (location) => {
       .returning('*'); // ambil row lengkap hasil insert
   
     return inserted; // berisi location_id dan field lain
-  };
+};
+
+const updateLocation = async (location_id, data) => {
+  return db('location').where({location_id}).update(data).returning('*');
+}
   
   module.exports = {
-    createLocation,
+    createLocation, updateLocation
   };

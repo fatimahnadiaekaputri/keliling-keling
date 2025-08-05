@@ -96,7 +96,7 @@ const getVillageById = async (req, res) => {
 
 const updateVillage = async (req, res) => {
     try {
-        const {village_id} = req.params;
+    const {village_id} = req.params;
     const data = req.body;
 
     if (!data || Object.keys(data).length === 0) {
@@ -104,19 +104,51 @@ const updateVillage = async (req, res) => {
           error: "Tidak ada data yang dikirim untuk di-update." 
         });
       }
-      
-    const updated = await villageModel.updateVillage(village_id, data);
 
-    if (!updated || updated.length === 0) {
-        return res.status(404).json({ 
-          message: "Data desa tidak ditemukan" 
-        });
+      const existingVillage = await villageModel.getVillageById(village_id);
+    if (!existingVillage) {
+      return res.status(404).json({ 
+        message: "Data desa tidak ditemukan" 
+      });
+    }
+      
+      const villageFields = [
+        'village_name', 'description', 'district', 'regency',
+        'photos', 'province', 'postal_code', 'location_id'
+      ];
+  
+      const villageData = {};
+      for (const key of villageFields) {
+        if (key in data) villageData[key] = data[key];
       }
   
-      res.json({ message: 'Data desa updated', village: updated[0] });
+      let updatedVillage = [];
+      if (Object.keys(villageData).length > 0) {
+        updatedVillage = await villageModel.updateVillage(village_id, villageData);
+      } else {
+        updatedVillage = [existingVillage]; // fallback ke data lama kalau bisnis gak diubah
+      }
+  
+      // 3. Update tabel location (kalau ada field yang dikirim)
+      const locationFields = ['latitude', 'longitude', 'address', 'location_name'];
+      const locationData = {};
+      for (const key of locationFields) {
+        if (key in data) locationData[key] = data[key];
+      }
+  
+      let updatedLocation = null;
+      if (Object.keys(locationData).length > 0) {
+        updatedLocation = await locationModel.updateLocation(existingVillage.location_id, locationData);
+      }
+  
+      res.json({ 
+        message: 'Data desa berhasil di-update',
+        village: updatedVillage[0],
+        ...(updatedLocation && { location: updatedLocation[0] })
+      });
     } catch (error) {
         res.status(500).json({ 
-          error: 'Failed to update data UKKM', 
+          error: 'Failed to update data desa', 
           detail: error.message 
         });
       }

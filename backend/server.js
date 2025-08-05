@@ -16,6 +16,7 @@ const umkmRouter = require('./src/routes/umkmRoutes');
 const categoryRouter = require('./src/routes/categoryRoutes');
 const villageRouter = require('./src/routes/villageRoutes');
 const tourismRouter = require('./src/routes/tourismRoutes');
+const galleryRouter = require('./src/routes/galleryRoutes');
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -46,6 +47,7 @@ app.use('/api/umkm', umkmRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/village', villageRouter);
 app.use('/api/tourism', tourismRouter);
+app.use('/api/gallery', galleryRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
