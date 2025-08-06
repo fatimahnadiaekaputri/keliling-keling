@@ -13,7 +13,8 @@ const createTourism = async (req, res, next) => {
             ticket_fee,
             village_id,
             photos,
-            link
+            link,
+            telephone
         } = req.body;
 
         const created_by = req.user?.user_id;
@@ -51,7 +52,8 @@ const createTourism = async (req, res, next) => {
             village_id,
             created_by,
             photos,
-            link
+            link,
+            telephone
           };
 
           const tourismInserted = await tourismModel.createTourism(tourismData);
@@ -142,7 +144,7 @@ const updateTourism = async (req, res) => {
     // 2. Update tabel business
     const tourismFields = [
       'tourism_name', 'description', 'facility', 'ticket_fee',
-      'photos', 'link', "village_id"
+      'photos', 'link', 'telephone', "village_id"
     ];
 
     const tourismData = {};

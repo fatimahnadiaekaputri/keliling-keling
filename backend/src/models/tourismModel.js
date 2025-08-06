@@ -17,7 +17,8 @@ const createTourism = async (tourism) => {
         created_by: tourism.created_by,
         created_at: jakartaTime,
         photos: tourism.photos,
-        link: tourism.link
+        link: tourism.link,
+        telephone: tourism.telephone
     };
 
     const [inserted] = await db('tourism').insert(tourismPayload).returning('*');
